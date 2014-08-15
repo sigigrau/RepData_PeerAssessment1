@@ -4,7 +4,7 @@
 
 ## Loading and preprocessing the data
 
-We load the data and display the structure of the object.
+First, we load the data:
 
 
 ```r
@@ -19,7 +19,7 @@ str(data)
 ##  $ interval: int  0 5 10 15 20 25 30 35 40 45 ...
 ```
 
-We convert the date variable to date type.
+Then, we convert the date variable to date type:
 
 
 ```r
@@ -33,9 +33,6 @@ str(data)
 ##  $ date    : Date, format: "2012-10-01" "2012-10-01" ...
 ##  $ interval: int  0 5 10 15 20 25 30 35 40 45 ...
 ```
-
-We display the first lines of the object.
-
 
 ```r
 head(data)
@@ -51,8 +48,49 @@ head(data)
 ## 6    NA 2012-10-01       25
 ```
 
+
 ## What is mean total number of steps taken per day?
 
+First, we remove the missing values:
+
+
+```r
+completeCases <- data[complete.cases(data$steps),c("steps","date")]
+```
+
+Then, we calculate the number of steps taken per day and rename the columns:
+
+
+```r
+stepsPerDay <- aggregate(completeCases$steps, by=list(completeCases$date), FUN=sum)
+names(stepsPerDay) <- c("date", "steps")
+```
+
+Then, we make a histogram of the total number of steps taken per day:
+
+
+```r
+barplot(
+    stepsPerDay$steps, 
+    names.arg=stepsPerDay$date,
+    main="Total steps taken per day",
+    xlab="Day",
+    ylab="Steps",
+    col="red")
+```
+
+![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5.png) 
+
+An finally, we calculate the mean and the median total number of steps taken per day:
+
+
+```r
+meanSteps <- mean(stepsPerDay$steps)
+medianSteps <- median(stepsPerDay$steps)
+```
+
+- The mean number of steps taken per day is **1.0766 &times; 10<sup>4</sup>**.
+- The median number of steps taken per day is **10765**.
 
 
 ## What is the average daily activity pattern?
