@@ -95,6 +95,48 @@ medianSteps <- median(stepsPerDay$steps)
 
 ## What is the average daily activity pattern?
 
+First, we remove the missing values:
+
+
+```r
+completeCases <- data[complete.cases(data$steps),]
+```
+
+Then, we calculate the average number of steps taken per interval and rename the columns:
+
+
+```r
+stepsPerDay <- aggregate(
+        completeCases[,c("steps")], 
+        by=list(completeCases$interval), 
+        FUN=mean)
+
+names(stepsPerDay) <- c("interval", "steps")
+```
+
+Then, we make a time series plot with the average daily activity: 
+
+
+```r
+plot(
+    stepsPerDay$interval, 
+    stepsPerDay$steps, 
+    type="l",
+    main="Average daily activity",
+    xlab="5-minute interval",
+    ylab="Average number of steps")
+```
+
+![plot of chunk unnamed-chunk-9](figure/unnamed-chunk-9.png) 
+
+Finally, we calculate the 5-minute interval wich contains the maximum number of steps.
+
+
+```r
+IntervalMaxSteps <- stepsPerDay[order(-stepsPerDay$steps),][1,"interval"]
+```
+
+The interval **835** is the 5-minute interval wich contains the maximum number of steps.
 
 
 ## Imputing missing values
