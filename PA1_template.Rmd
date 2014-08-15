@@ -1,9 +1,28 @@
 # Reproducible Research: Peer Assessment 1
 
 
+
 ## Loading and preprocessing the data
 
+We load the data and display the structure of the object.
 
+```{r}
+data <- read.table("activity.csv", header=TRUE, sep=",")
+str(data)
+```
+
+We convert the date variable to date type.
+
+```{r}
+data <- transform(data, date = as.Date(date))
+str(data)
+```
+
+We display the first lines of the object.
+
+```{r}
+head(data)
+```
 
 ## What is mean total number of steps taken per day?
 
