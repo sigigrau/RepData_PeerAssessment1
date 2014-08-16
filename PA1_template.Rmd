@@ -70,12 +70,12 @@ completeCases <- data[complete.cases(data$steps),]
 Then, we calculate the average number of steps taken per interval and rename the columns:
 
 ```{r}
-stepsPerDay <- aggregate(
+stepsPerInterval <- aggregate(
         completeCases[,c("steps")], 
         by=list(completeCases$interval), 
         FUN=mean)
 
-names(stepsPerDay) <- c("interval", "steps")
+names(stepsPerInterval) <- c("interval", "steps")
 
 ```
 
@@ -83,8 +83,8 @@ Then, we make a time series plot with the average daily activity:
 
 ```{r}
 plot(
-    stepsPerDay$interval, 
-    stepsPerDay$steps, 
+    stepsPerInterval$interval, 
+    stepsPerInterval$steps, 
     type="l",
     main="Average daily activity",
     xlab="5-minute interval",
@@ -94,7 +94,7 @@ plot(
 Finally, we calculate the 5-minute interval wich contains the maximum number of steps.
 
 ```{r}
-IntervalMaxSteps <- stepsPerDay[order(-stepsPerDay$steps),][1,"interval"]
+IntervalMaxSteps <- stepsPerInterval[order(-stepsPerInterval$steps),][1,"interval"]
 ```
 
 The interval **`r IntervalMaxSteps`** is the 5-minute interval wich contains the maximum number of steps.
@@ -102,6 +102,68 @@ The interval **`r IntervalMaxSteps`** is the 5-minute interval wich contains the
 
 ## Imputing missing values
 
+First, we calculate the total number of missing values in the dataset:
+
+```{r}
+totalMissing <- nrow(data[is.na(data),])
+```
+
+The total number of missing values in the dataset is **`r totalMissing`**.
+
+Then, we are going to create a dataset with the missing values filled with the mean for that 5-minute interval:
+
+```{r}
+dataFilled <- data
+
+for (i in 1:nrow(dataFilled))
+{
+    if(is.na(dataFilled$steps[i]))
+    {
+        interval <- stepsPerInterval$interval == dataFilled$interval[i]
+        dataFilled$steps[i] = stepsPerInterval[interval, "steps"]
+    }
+}
+```
+
+Then, we calculate the number of steps taken per day and rename the columns:
+
+```{r}
+stepsPerDayFilled <- aggregate(
+    dataFilled$steps, 
+    by=list(dataFilled$date), 
+    FUN=sum)
+
+names(stepsPerDayFilled) <- c("date", "steps")
+```
+
+Then, we make a histogram of the total number of steps taken per day:
+
+```{r}
+
+barplot(
+    stepsPerDayFilled$steps, 
+    names.arg=stepsPerDayFilled$date,
+    main="Total steps taken per day",
+    xlab="Day",
+    ylab="Steps",
+    col="red")
+```
+
+An finally, we calculate the mean and the median total number of steps taken per day:
+
+```{r}
+meanStepsFilled <- mean(stepsPerDayFilled$steps)
+medianStepsFilled <- median(stepsPerDayFilled$steps)
+```
+
+- The mean number of steps taken per day is **`r meanStepsFilled`**.
+- The median number of steps taken per day is **`r medianStepsFilled`**.
+
+If we compare this values with the values calculated in the first part, we can see that **the mean has the same value but the median has slightly increased**.
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
+
+
+
+
