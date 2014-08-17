@@ -208,3 +208,57 @@ If we compare this values with the values calculated in the first part, we can s
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
+
+First, we create a new variable indicating whether the observation is a weekday or a weekend:
+
+
+```r
+library(ggplot2)
+
+for (i in 1:nrow(dataFilled))
+{       
+    isWeekend <- 
+            weekdays(dataFilled$date[i]) == "Saturday" | 
+            weekdays(dataFilled$date[i]) == "Sunday" 
+        
+    if(isWeekend)
+    {
+        dataFilled$week[i] <- "weekend"
+    }
+    else
+    {
+        dataFilled$week[i] <- "weekday"
+    }
+}
+```
+
+Then, we calculate the steps per interval:
+
+
+```r
+stepsPerInterval <- aggregate(
+        dataFilled[,c("steps")], 
+        by=list(dataFilled$interval, dataFilled$week), 
+        FUN=mean)
+
+names(stepsPerInterval) <- c("interval", "week", "steps")
+```
+
+Finally, we make a panel plot containing a time series plot of the 5-minute interval and the average number of steps taken, averaged across all weekday days or weekend days.
+
+
+```r
+library(lattice)
+
+xyplot(
+    data = dataFilled,
+    steps~interval | week, 
+    xlab="Interval", 
+    ylab="Number of steps",
+    type="l",
+    layout=c(1,2))
+```
+
+![plot of chunk unnamed-chunk-18](figure/unnamed-chunk-18.png) 
+
+We can see that there is more activity during weekdays than weekends, specially in the morning.
